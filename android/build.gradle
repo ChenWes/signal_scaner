@@ -33,3 +33,7 @@ android {
         minSdkVersion 16
     }
 }
+
+dependencies {
+    implementation files('src\\main\\java\\libs\\sdk_d80_2.0.jar')
+}
