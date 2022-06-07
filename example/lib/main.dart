@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:signal_scaner/signal_scaner.dart';
 
@@ -16,7 +16,9 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
+  String? _platformVersion = 'Unknown';
+  String _deviceValue = '';
+  int i = 0;
 
   @override
   void initState() {
@@ -32,6 +34,26 @@ class _MyAppState extends State<MyApp> {
     try {
       platformVersion =
           await SignalScaner.platformVersion ?? 'Unknown platform version';
+
+      try {
+        String? test = await SignalScaner.openDevice;
+        setState(() {
+          _platformVersion = test;
+        });
+      } catch (ex) {
+        print("打开设备出现错误：" + ex.toString());
+      }
+      // 不声明变量获取回调函数
+      SignalScaner.receiveStream.listen((event) {
+        print("返回的数据" + event.toString());
+
+        // 返回数据
+        setState(() {
+          _deviceValue = _deviceValue + "=>" + event.toString();
+        });
+      }, onError: (error) {
+        print(error.toString());
+      });
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';
     }
@@ -54,7 +76,15 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Plugin example app'),
         ),
         body: Center(
-          child: Text('Running on: $_platformVersion\n'),
+            child: Column(
+          children: [
+            Text('Device : $_platformVersion\n'),
+            Text('Value : $_deviceValue\n'),
+          ],
+        )),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () async {},
+          child: Icon(Icons.open_in_browser),
         ),
       ),
     );
