@@ -36,13 +36,15 @@ class _MyAppState extends State<MyApp> {
           await SignalScaner.platformVersion ?? 'Unknown platform version';
 
       try {
+
+        // 打开串口
         String? test = await SignalScaner.openDevice;
-        setState(() {
-          _platformVersion = test;
-        });
+
       } catch (ex) {
         print("打开设备出现错误：" + ex.toString());
       }
+
+
       // 不声明变量获取回调函数
       SignalScaner.receiveStream.listen((event) {
         print("返回的数据" + event.toString());
@@ -51,9 +53,12 @@ class _MyAppState extends State<MyApp> {
         setState(() {
           _deviceValue = _deviceValue + "=>" + event.toString();
         });
+
       }, onError: (error) {
         print(error.toString());
       });
+
+
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';
     }
@@ -82,10 +87,6 @@ class _MyAppState extends State<MyApp> {
             Text('Value : $_deviceValue\n'),
           ],
         )),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () async {},
-          child: Icon(Icons.open_in_browser),
-        ),
       ),
     );
   }

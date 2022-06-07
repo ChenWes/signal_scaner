@@ -50,19 +50,22 @@ public class SignalScanerPlugin implements FlutterPlugin, MethodCallHandler, Eve
             case "openDevice":
                 try {
                     if (this.openDevice()) {
+                        // 回复串口打开成功消息
                         result.success("openDeviceSuccess");
 
-                        //监听信号变化
+                        // 初始化类用于监听信号变化
                         DataReceived dataReceived = new DataReceived();
+
+                        // D80回调方法设置为刚初始化的类
                         D80.CallBackIOData(dataReceived);
+
                     } else {
                         throw new Exception("OpenIODevFail");
                     }
                 } catch (Exception exception) {
+                    // 回复串口打开失败消息
                     result.error("openDeviceFail", "openDeviceFail", exception);
                 }
-                break;
-            case "closeDevice":
                 break;
             default:
                 result.notImplemented();
@@ -71,12 +74,12 @@ public class SignalScanerPlugin implements FlutterPlugin, MethodCallHandler, Eve
     }
 
 
-
+    /**
+     * 打开串口
+     * @return
+     */
     private boolean openDevice(){
        return D80.OpenIODev();
-    }
-
-    private void closeDevice(){
     }
 
     @Override
