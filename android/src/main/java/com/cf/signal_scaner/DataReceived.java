@@ -1,11 +1,15 @@
 package com.cf.signal_scaner;
 
-import static com.alibaba.fastjson.JSON.toJSONString;
 import android.os.Handler;
 import android.os.Looper;
 
 import com.example.sdk_d80.D80Serial;
 import com.example.sdk_d80.MsgRecord;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 
 
 /**
@@ -16,19 +20,28 @@ public class DataReceived implements D80Serial.D80Interface {
 
     private Handler mHandler = new Handler(Looper.getMainLooper());
 
-    // D80返回的原有数据格式，需要将它转换成JSON
-    private Record record = new Record();
 
     @Override
-    public void CallBackMethod(MsgRecord msgRecord) {
+    public void CallBackMethod(MsgRecord msgRecord)   {
 
-        // 处理日期时间格式
-        record.setTime(handleTime(msgRecord.Time));
-        // 处理返回数据
-        record.setTotalState(msgRecord.TotalState);
+        JSONObject jsonObject=new JSONObject();
+        JSONArray jsonArray=new JSONArray();
 
-        // 数据发送方法
-        onDataReceived(toJSONString(record));
+        try {
+            jsonObject.put("time",handleTime(msgRecord.Time));
+
+            for (int i = 0; i < msgRecord.TotalState.length; i++) {
+                jsonArray.put( msgRecord.TotalState[i]);
+            }
+
+            jsonObject.put("totalState",jsonArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        onDataReceived(jsonObject.toString());
+
+
     }
 
     /**
