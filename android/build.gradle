@@ -55,6 +55,5 @@ android {
 
 dependencies {
     implementation files('libs\\sdk_d80_2.0.jar')
-    implementation 'com.alibaba:fastjson:1.2.37'
     // compileOnly files('libs/sdk_d80_2.0.jar')
 }
