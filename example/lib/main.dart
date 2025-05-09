@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:signal_scaner/signal_scaner.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -31,37 +31,27 @@ class _MyAppState extends State<MyApp> {
     String platformVersion;
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
-    try {
-      platformVersion =
-          await SignalScaner.platformVersion ?? 'Unknown platform version';
 
-      try {
+    platformVersion =
+        await SignalScaner().getPlatformVersion() ?? 'Unknown platform version';
 
-        // 打开串口
-        String? test = await SignalScaner.openDevice;
+    // 打开串口
+    bool? test = await SignalScaner.openDevice;
+    print(test);
+    setState(() {
+      _deviceValue = test.toString();
+    });
+    // 不声明变量获取回调函数
+    SignalScaner.receiveStream.listen((event) {
+      print("返回的数据" + event.toString());
 
-      } catch (ex) {
-        print("打开设备出现错误：" + ex.toString());
-      }
-
-
-      // 不声明变量获取回调函数
-      SignalScaner.receiveStream.listen((event) {
-        print("返回的数据" + event.toString());
-
-        // 返回数据
-        setState(() {
-          _deviceValue = _deviceValue + "=>" + event.toString();
-        });
-
-      }, onError: (error) {
-        print(error.toString());
+      // 返回数据
+      setState(() {
+        _deviceValue = _deviceValue + "=>" + event.toString();
       });
-
-
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
+    }, onError: (error) {
+      print(error.toString());
+    });
 
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling
@@ -82,11 +72,11 @@ class _MyAppState extends State<MyApp> {
         ),
         body: Center(
             child: Column(
-          children: [
-            Text('Device : $_platformVersion\n'),
-            Text('Value : $_deviceValue\n'),
-          ],
-        )),
+              children: [
+                Text('Device : $_platformVersion\n'),
+                Text('Value : $_deviceValue\n'),
+              ],
+            )),
       ),
     );
   }

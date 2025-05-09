@@ -1,5 +1,5 @@
-group 'com.cf.signal_scaner'
-version '1.0'
+group = "com.cf.signal_scaner"
+version = "1.0"
 
 buildscript {
     repositories {
@@ -8,7 +8,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.0'
+        classpath("com.android.tools.build:gradle:8.7.0")
     }
 }
 
@@ -19,36 +19,40 @@ rootProject.allprojects {
     }
 }
 
-apply plugin: 'com.android.library'
+apply plugin: "com.android.library"
 
 android {
-    compileSdkVersion 31
+    namespace = "com.cf.signal_scaner"
+
+    compileSdk = 35
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 
     defaultConfig {
-        minSdkVersion 16
+        minSdk = 21
     }
 
-    buildTypes {
-        release {
-            ndk {
-                abiFilters "armeabi",   "armeabi-v7a"
-            }
-        }
-        debug {
-            ndk { //这里要加上，否则debug包会出问题,后面三个为可选，x86建议加上不然部分模拟器回报错
-                abiFilters "armeabi",  "armeabi-v7a" , "x86"
-            }
-        }
+    dependencies {
+        testImplementation("junit:junit:4.13.2")
+        testImplementation("org.mockito:mockito-core:5.0.0")
     }
+
     sourceSets {
         main {
-            jni.srcDirs = []
             jniLibs.srcDirs = ['libs']//这个必须加，因为我们把.so文件放在了libs文件夹中
+        }
+    }
+
+    testOptions {
+        unitTests.all {
+            testLogging {
+               events "passed", "skipped", "failed", "standardOut", "standardError"
+               outputs.upToDateWhen {false}
+               showStandardStreams = true
+            }
         }
     }
 }

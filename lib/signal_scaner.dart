@@ -1,20 +1,20 @@
-import 'dart:async';
 
 import 'package:flutter/services.dart';
+
+import 'signal_scaner_platform_interface.dart';
 
 class SignalScaner {
   static const MethodChannel _channel = MethodChannel('signal_scaner');
   static const EventChannel _eventChannel = EventChannel('signal_scaner/event');
   static late Stream _eventStream;
 
-  static Future<String?> get platformVersion async {
-    final String? version = await _channel.invokeMethod('getPlatformVersion');
-    return version;
+  Future<String?> getPlatformVersion() {
+    return SignalScanerPlatform.instance.getPlatformVersion();
   }
 
   /// 打开设备
-  static Future<String?> get openDevice async {
-    final String? result = await _channel.invokeMethod('openDevice');
+  static Future<bool?> get openDevice async {
+    final bool? result = await _channel.invokeMethod('openDevice');
     return result;
   }
 

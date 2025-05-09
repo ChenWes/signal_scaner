@@ -1,23 +1,29 @@
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:signal_scaner/signal_scaner.dart';
+import 'package:signal_scaner/signal_scaner_platform_interface.dart';
+import 'package:signal_scaner/signal_scaner_method_channel.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+
+class MockSignalScanerPlatform
+    with MockPlatformInterfaceMixin
+    implements SignalScanerPlatform {
+
+  @override
+  Future<String?> getPlatformVersion() => Future.value('42');
+}
 
 void main() {
-  const MethodChannel channel = MethodChannel('signal_scaner');
+  final SignalScanerPlatform initialPlatform = SignalScanerPlatform.instance;
 
-  TestWidgetsFlutterBinding.ensureInitialized();
-
-  setUp(() {
-    channel.setMockMethodCallHandler((MethodCall methodCall) async {
-      return '42';
-    });
-  });
-
-  tearDown(() {
-    channel.setMockMethodCallHandler(null);
+  test('$MethodChannelSignalScaner is the default instance', () {
+    expect(initialPlatform, isInstanceOf<MethodChannelSignalScaner>());
   });
 
   test('getPlatformVersion', () async {
-    expect(await SignalScaner.platformVersion, '42');
+    SignalScaner signalScanerPlugin = SignalScaner();
+    MockSignalScanerPlatform fakePlatform = MockSignalScanerPlatform();
+    SignalScanerPlatform.instance = fakePlatform;
+
+    expect(await signalScanerPlugin.getPlatformVersion(), '42');
   });
 }
